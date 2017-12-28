@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>page_tasks.qml</file>
+        <file>page_menu.qml</file>
+        <file>Mypopup.qml</file>
+    </qresource>
+</RCC>
