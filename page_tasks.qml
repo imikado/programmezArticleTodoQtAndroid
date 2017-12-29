@@ -10,11 +10,14 @@ Rectangle {
     color:"#789598"
 
     ToolBar {
+        height:calculate(140)
 
         RowLayout {
-            anchors.fill: parent
+            width:parent.width
+            height:parent.height
 
             ToolButton {
+
                 text: qsTr(" < ")
                 onClicked: stack.pop()
             }
@@ -23,10 +26,10 @@ Rectangle {
                 elide: Label.ElideRight
                 horizontalAlignment: Qt.AlignHCenter
                 verticalAlignment: Qt.AlignVCenter
-                Layout.fillWidth: true
+
                 font.pixelSize: calculate(20)
             }
-
+            Item { Layout.fillWidth: true }
             ToolButton {
                 text: qsTr(" + ")
                 onClicked: addTask()
@@ -36,7 +39,7 @@ Rectangle {
     }
 
     ColumnLayout{
-        y:calculate(80)
+        y:calculate(180)
 
         width:parent.width
         spacing:calculate(20)

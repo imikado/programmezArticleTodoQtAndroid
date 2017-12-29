@@ -9,11 +9,16 @@ import QtQuick.LocalStorage 2.0
 
 
 Window {
-    visible: true
-    width: 480
-    height: 800
-    title: qsTr("TO DOs")
+    property bool dev:true
 
+    property int _width: 480
+    property int _height: 800
+
+    width:{ if(dev===true){ _width }else{ Screen.width } }
+    height:{ if(dev===true){ _height }else{ Screen.height } }
+
+    visible: true
+    title: qsTr("TO DOs")
     id:maina
 
     property real iRatio:0;
@@ -22,6 +27,21 @@ Window {
         id:modelTasks
     }
 
+
+    function launch(sView){
+        stack.push(sView);
+    }
+    function calculate(value_){
+        return value_*iRatio;
+    }
+    function init(){
+
+        iRatio=(width/_width);
+
+        launch('qrc:/page_menu.qml')
+    }
+
+    //tasks
     function addTask(){
         popupTask.myIndex=-1;
         popupTask.action="insert";
@@ -30,21 +50,31 @@ Window {
 
         myPopup.reset();
     }
+    function saveTask(){
 
-    function calculate(value_){
-        return value_*iRatio;
+        if(popupTask.action === "update"){
+
+            modelTasks.get(popupTask.myIndex ).titre=myPopup.getInputText();
+            modelTasks.get(popupTask.myIndex ).texte=myPopup.getTextarea();
+            if(myPopup.getSwitchChecked() ){
+                modelTasks.get(popupTask.myIndex ).done=1;
+            }else{
+                modelTasks.get(popupTask.myIndex ).done=0;
+            }
+
+        }else{
+            modelTasks.append({titre:myPopup.getInputText(),texte:myPopup.getTextarea(),done:0});
+        }
+
+        popupTask.close();
+
     }
+    function removeTask(){
+        if(popupTask.action === "update"){
+            modelTasks.remove(popupTask.myIndex);
+        }
 
-    function launch(sView){
-        stack.push(sView);
-
-    }
-
-    function init(width_,height_){
-
-        iRatio=(width/width_);
-
-        launch('qrc:/page_menu.qml')
+        popupTask.close();
     }
 
     function popup(index_ ){
@@ -86,7 +116,6 @@ Window {
         anchors.fill: parent
     }
 
-    //Component.onCompleted:init(Screen.width,Screen.height);
-    Component.onCompleted:init(480,800);
+    Component.onCompleted:init();
 
 }

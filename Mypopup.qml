@@ -3,6 +3,16 @@ import QtQuick.Controls 2.0
 
 Item {
 
+    function getInputText(){
+        return textInput.text;
+    }
+    function getTextarea(){
+        return textArea.text;
+    }
+    function getSwitchChecked(){
+        return switch1.checked;
+    }
+
     function reset(){
         textInput.text="";
         textArea.text="";
@@ -22,31 +32,6 @@ Item {
         }else{
             switch1.checked=0;
         }
-    }
-
-    function save(){
-
-        if(popupTask.action === "update"){
-
-            modelTasks.get(popupTask.myIndex ).titre=textInput.text;
-            modelTasks.get(popupTask.myIndex ).texte=textArea.text;
-            if(switch1.checked){
-                modelTasks.get(popupTask.myIndex ).done=1;
-            }else{
-                modelTasks.get(popupTask.myIndex ).done=0;
-            }
-
-        }else{
-            modelTasks.append({titre:textInput.text,texte:textArea.text,done:0});
-        }
-
-    }
-
-    function remove(){
-        if(popupTask.action === "update"){
-            modelTasks.remove(popupTask.myIndex);
-        }
-
     }
 
     width: parent.width
@@ -105,8 +90,8 @@ Item {
         font.pixelSize: calculate(12)
 
         onClicked:function(){
-            save();
-            popupTask.close();
+            saveTask();
+
         }
     }
 
@@ -127,8 +112,7 @@ Item {
         }
 
         onClicked:function(){
-            remove()
-            popupTask.close();
+            removeTask()
         }
     }
 
