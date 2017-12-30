@@ -77,15 +77,12 @@ Window {
         popupTask.close();
     }
 
-    function popup(index_ ){
+    function editTask(index_ ){
 
         popupTask.myIndex=index_;
         popupTask.action="update";
 
-        console.log("ask popup "+index_+' titre:'+modelTasks.get(index_).titre);
-
         popupTask.open();
-
         myPopup.reset();
         myPopup.loadInfos(index_ );
     }

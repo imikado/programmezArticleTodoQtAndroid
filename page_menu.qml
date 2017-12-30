@@ -35,6 +35,7 @@ Rectangle {
         width:parent.width
         spacing:calculate(20)
 
+        //bouton du menu
         Rectangle {
             Layout.alignment: Qt.AlignCenter
             radius: calculate(10)
