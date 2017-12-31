@@ -21,6 +21,8 @@ Window {
     title: qsTr("TO DOs")
     id:maina
 
+    property var _db;
+
     property real iRatio:0;
 
     ListModel{
@@ -35,6 +37,33 @@ Window {
         return value_*iRatio;
     }
     function init(){
+
+        _db = LocalStorage.openDatabaseSync("myTasksDb", "1.0", "My tasks", 1000000);
+
+        _db.transaction(
+                    function(tx) {
+                        // Create the database if it doesn't already exist
+                        tx.executeSql('CREATE TABLE IF NOT EXISTS MyTasks(id INTEGER PRIMARY KEY,titre TEXT, texte TEXT, done INT)');
+
+                        var rs = tx.executeSql('SELECT * FROM MyTasks');
+
+                        var r = ""
+                        for (var i = 0; i < rs.rows.length; i++) {
+                            r += rs.rows.item(i).salutation + ", " + rs.rows.item(i).salutee + "\n"
+
+                            modelTasks.append(
+                                        {
+                                            titre:rs.rows.item(i).titre,
+                                            texte:rs.rows.item(i).texte,
+                                            done:rs.rows.item(i).done,
+                                            id:rs.rows.item(i).id
+                                        }
+                                        );
+
+                        }
+
+                    }
+                    );
 
         iRatio=(width/_width);
 
@@ -54,16 +83,49 @@ Window {
 
         if(popupTask.action === "update"){
 
-            modelTasks.get(popupTask.myIndex ).titre=myPopup.getInputText();
-            modelTasks.get(popupTask.myIndex ).texte=myPopup.getTextarea();
+            var oUpdateRow=modelTasks.get(popupTask.myIndex );
+
+            oUpdateRow.titre=myPopup.getInputText();
+            oUpdateRow.texte=myPopup.getTextarea();
             if(myPopup.getSwitchChecked() ){
-                modelTasks.get(popupTask.myIndex ).done=1;
+                oUpdateRow.done=1;
             }else{
-                modelTasks.get(popupTask.myIndex ).done=0;
+                oUpdateRow.done=0;
             }
 
+            _db.transaction(
+                        function(tx) {
+                            // Create the database if it doesn't already exist
+                            tx.executeSql('UPDATE MyTasks SET titre=?,texte=?,done=? WHERE id=?',[
+                                              oUpdateRow.titre,
+                                              oUpdateRow.texte,
+                                              oUpdateRow.done,
+                                              oUpdateRow.id
+
+                                          ]);
+                        }
+                        );
+
         }else{
-            modelTasks.append({titre:myPopup.getInputText(),texte:myPopup.getTextarea(),done:0});
+            var oNewRow={titre:myPopup.getInputText(),texte:myPopup.getTextarea(),done:0};
+            oNewRow.id=modelTasks.count;
+
+            _db.transaction(
+                        function(tx) {
+                            // Insert tasks
+                            tx.executeSql('INSERT INTO MyTasks (titre,texte,done,id) VALUES (?,?,?,?)',[
+                                              oNewRow.titre,
+                                              oNewRow.texte,
+                                              oNewRow.done,
+                                              oNewRow.id
+
+                                          ]);
+                        }
+                        );
+
+            modelTasks.append(oNewRow);
+
+
         }
 
         popupTask.close();
@@ -71,6 +133,18 @@ Window {
     }
     function removeTask(){
         if(popupTask.action === "update"){
+
+            _db.transaction(
+                        function(tx) {
+                            // Insert tasks
+                            tx.executeSql('DELETE FROM MyTasks WHERE id=?',[
+                                              modelTasks.get(popupTask.myIndex ).id
+
+                                          ]);
+                        }
+                        );
+
+
             modelTasks.remove(popupTask.myIndex);
         }
 
