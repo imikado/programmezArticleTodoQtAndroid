@@ -42,28 +42,23 @@ Window {
 
         _db.transaction(
                     function(tx) {
-                        // Create the database if it doesn't already exist
+                        // Creation de la table si elle n'existe pas
                         tx.executeSql('CREATE TABLE IF NOT EXISTS MyTasks(id INTEGER PRIMARY KEY,titre TEXT, texte TEXT, done INT)');
 
                         var rs = tx.executeSql('SELECT * FROM MyTasks');
 
-                        var r = ""
+                        //boucle sur les taches stoquees en SQL pour les ajouter au model de l'application
                         for (var i = 0; i < rs.rows.length; i++) {
-                            r += rs.rows.item(i).salutation + ", " + rs.rows.item(i).salutee + "\n"
 
-                            modelTasks.append(
-                                        {
+                            modelTasks.append({
                                             titre:rs.rows.item(i).titre,
                                             texte:rs.rows.item(i).texte,
                                             done:rs.rows.item(i).done,
                                             id:rs.rows.item(i).id
-                                        }
-                                        );
-
+                                        });
                         }
-
                     }
-                    );
+        );
 
         iRatio=(width/_width);
 
